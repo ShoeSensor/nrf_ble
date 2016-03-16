@@ -14,29 +14,3 @@
  * limitations under the License.
  */
 
-#ifndef BLETRANSFER_H
-#define	BLETRANSFER_H
-
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-
-/**
- * Start services etc.
- * TODO implementation
- */
-void ble_servicesInit();
-
-/**
- * Add a ble service
- * TODO implementation
- */
-void ble_serviceAdd();
-
-
-#ifdef	__cplusplus
-}
-#endif
-
-#endif	/* BLETRANSFER_H */

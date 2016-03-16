@@ -21,6 +21,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "device_manager.h"
+
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -43,10 +45,18 @@ void conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
 /**
  * Initialize device manager. All parameters are abstracted. To change the
  * values, see ble_config.h
+ * @param appHandle Application identifier allocated by device manager
  * @param doEraseBonds Indicated if the device manager should delete bonding
  * information from the persistent memory during initialization.
  */
-void conn_deviceManagerInit(bool doEraseBonds);
+void conn_deviceManagerInit(dm_application_instance_t appHandle,
+		bool doEraseBonds);
+
+/**
+ * Initialize BLE advertising module
+ * @param uuids UUID's to advertise
+ */
+void conn_advertisingInit(ble_uuid_t uuids[]);
 
 #ifdef	__cplusplus
 }

@@ -17,7 +17,6 @@
 #include "ble_connection.h"
 #include "ble_config.h"
 
-#include "nordic_common.h"
 #include "app_error.h"
 #include "ble.h"
 #include "ble_hci.h"
@@ -27,13 +26,11 @@
 #include "ble_conn_params.h"
 #include "boards.h"
 #include "device_manager.h"
-
+#include "nordic_common.h"
 #include "nrf.h"
 #include "nrf_error.h"
 #include "pstorage.h"
 #include "softdevice_handler.h"
-
-//static uint16_t connHandle = BLE_CONN_HANDLE_INVALID;
 
 static void paramsErrorHandler(uint32_t errCode)
 {
@@ -47,7 +44,8 @@ static uint32_t devManErrorHandler(dm_handle_t handle, dm_event_t event,
 	return NRF_SUCCESS;
 }
 
-void conn_deviceManagerInit(bool doEraseBonds)
+void conn_deviceManagerInit(dm_application_instance_t appHandle,
+		bool doEraseBonds)
 {
 	uint32_t errCode;
 	dm_application_param_t devManParams;
@@ -70,6 +68,8 @@ void conn_deviceManagerInit(bool doEraseBonds)
 	devManParams.sec_param.oob = SEC_PARAM_OOB;
 	devManParams.sec_param.min_key_size = SEC_PARAM_MIN_KEY_SIZE;
 	devManParams.sec_param.max_key_size = SEC_PARAM_MAX_KEY_SIZE;
+	errCode = dm_register(&appHandle, &devManParams);
+	APP_ERROR_CHECK(errCode);
 }
 
 void conn_gapParamsInit(const char* deviceName)

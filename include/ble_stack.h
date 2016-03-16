@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef BLETRANSFER_H
-#define	BLETRANSFER_H
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
+#ifndef INCLUDE_BLE_STACK_H_
+#define INCLUDE_BLE_STACK_H_
 
 /**
- * Start services etc.
- * TODO implementation
+ * Initialize ble stack and softdevice
+ * TODO: implementation
  */
-void ble_servicesInit();
-
-/**
- * Add a ble service
- * TODO implementation
- */
-void ble_serviceAdd();
+void stack_init();
 
 
-#ifdef	__cplusplus
-}
-#endif
 
-#endif	/* BLETRANSFER_H */
+#endif /* INCLUDE_BLE_STACK_H_ */
