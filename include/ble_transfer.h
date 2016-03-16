@@ -22,7 +22,11 @@ extern "C" {
 #endif
 
 
-
+/**
+ * Start services etc.
+ * TODO implementation
+ */
+void ble_servicesInit();
 
 
 #ifdef	__cplusplus

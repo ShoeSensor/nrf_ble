@@ -16,8 +16,22 @@
  
 #include <stdint.h>
 #include <string.h>
+#include "app_error.h"
+#include "ble_config.h"
+
+/**
+ * Error callback for the softdevice
+ * @param line_num		Line number where an error occurred
+ * @param p_file_name	File where the error is
+ */
+void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
+{
+    app_error_handler(DEAD_BEEF, line_num, p_file_name);
+}
+
+
 
 int main(void)
 {
-    while(1);
+	while(1);
 }
