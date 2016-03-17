@@ -53,7 +53,6 @@ uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
 			.clear_persistent_data = doEraseBonds
 	};
 	memset(&devManParams.sec_param, 0, sizeof(devManParams.sec_param));
-
 	errCode = pstorage_init();
 	APP_ERROR_CHECK(errCode);
 
