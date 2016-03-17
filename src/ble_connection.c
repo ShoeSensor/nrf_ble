@@ -44,7 +44,7 @@ static uint32_t devManErrorHandler(dm_handle_t handle, dm_event_t event,
 	return NRF_SUCCESS;
 }
 
-void conn_deviceManagerInit(dm_application_instance_t appHandle,
+uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
 		bool doEraseBonds)
 {
 	uint32_t errCode;
@@ -70,9 +70,10 @@ void conn_deviceManagerInit(dm_application_instance_t appHandle,
 	devManParams.sec_param.max_key_size = SEC_PARAM_MAX_KEY_SIZE;
 	errCode = dm_register(&appHandle, &devManParams);
 	APP_ERROR_CHECK(errCode);
+	return errCode;
 }
 
-void conn_gapParamsInit(const char* deviceName)
+uint32_t conn_gapParamsInit(const char* deviceName)
 {
     uint32_t errCode;
     ble_gap_conn_params_t gapConnParams;
@@ -97,9 +98,10 @@ void conn_gapParamsInit(const char* deviceName)
 
     errCode = sd_ble_gap_ppcp_set(&gapConnParams);
     APP_ERROR_CHECK(errCode);
+    return errCode;
 }
 
-void conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback)
+uint32_t conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback)
 {
     uint32_t errCode;
     ble_conn_params_init_t connInit;
@@ -117,4 +119,37 @@ void conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback)
 
     errCode = ble_conn_params_init(&connInit);
     APP_ERROR_CHECK(errCode);
+    return errCode;
+}
+
+uint32_t conn_advertisingInit(ble_uuid_t uuids[], ble_adv_evt_t advCallback)
+{
+	uint32_t errCode;
+	ble_advdata_t adverData;
+	ble_adv_modes_config_t advModeConf = {0};
+
+	memset(&adverData, 0, sizeof(adverData));
+
+	adverData.name_type = BLE_ADVDATA_FULL_NAME;
+	adverData.include_appearance = true;
+	adverData.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; /**< Only use BLE*/
+	// UUID's
+	adverData.uuids_complete.p_uuids = uuids;
+	adverData.uuids_complete.uuid_cnt = ARRAY_SIZE(uuids);
+
+	advModeConf.ble_adv_slow_enabled = BLE_ADV_SLOW_ENABLED;
+	advModeConf.ble_adv_directed_slow_interval = APP_ADV_INTERVAL;
+	advModeConf.ble_adv_directed_slow_timeout = APP_ADV_TIMEOUT_IN_SECONDS;
+
+	errCode = ble_advertising_init(&adverData, NULL, &advModeConf, NULL, NULL);
+	APP_ERROR_CHECK(errCode);
+	return errCode;
+}
+
+uint32_t conn_advertisingStart(ble_adv_mode_t advMode)
+{
+	uint32_t errCode;
+	errCode = ble_advertising_start(advMode);
+	APP_ERROR_CHECK(errCode);
+	return errCode;
 }

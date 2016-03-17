@@ -13,4 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "nordic_common.h"
+#include "nrf.h"
 
+#include "app_error.h"
+#include "ble.h"
+#include "softdevice_handler.h"
+
+void stack_init()
+{
+	//TODO: implementation
+
+}

@@ -31,16 +31,18 @@ extern "C" {
  * Initialize ble GAP params. As the name is the only important in this case,
  * everything else is abstracted
  * @param deviceName Name the device advertises with
+ * @return NRF_SUCCES if success, NRF_ERROR* if fail
  */
-void conn_gapParamsInit(const char* deviceName);
+uint32_t conn_gapParamsInit(const char* deviceName);
 
 /**
- * Initialize ble connection parameters. All parameters are abstracted exept for
+ * Initialize ble connection parameters. All parameters are abstracted except for
  * the parameter event handler.
  * @param paramsCallback Handle the connection parameter module. This is called
  * when the parameters are applied successfully or failed
+ * @return NRF_SUCCES if success, NRF_ERROR* if fail
  */
-void conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
+uint32_t conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
 
 /**
  * Initialize device manager. All parameters are abstracted. To change the
@@ -48,15 +50,26 @@ void conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
  * @param appHandle Application identifier allocated by device manager
  * @param doEraseBonds Indicated if the device manager should delete bonding
  * information from the persistent memory during initialization.
+ * @return NRF_SUCCES if success, NRF_ERROR* if fail
  */
-void conn_deviceManagerInit(dm_application_instance_t appHandle,
+uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
 		bool doEraseBonds);
 
 /**
  * Initialize BLE advertising module
- * @param uuids UUID's to advertise
+ * @param uuids	UUID's to advertise
+ * @param advCallback Callback to handle the adversing events
+ * @return NRF_SUCCES on success, error code otherwise
  */
-void conn_advertisingInit(ble_uuid_t uuids[]);
+uint32_t conn_advertisingInit(ble_uuid_t uuids[], ble_adv_evt_t advCallback);
+
+
+/**
+ * Start advertising
+ * @param advMode Mode to advertise in
+ * @return NRF_SUCCES if success, error code if error
+ */
+uint32_t conn_advertisingStart(ble_adv_mode_t advMode);
 
 #ifdef	__cplusplus
 }
