@@ -15,7 +15,7 @@
  */
 
 #ifndef BLECONNECTION_H
-#define	BLECONNECTION_H
+#define BLECONNECTION_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -23,7 +23,7 @@
 
 #include "device_manager.h"
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -53,7 +53,7 @@ uint32_t conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
  * @return NRF_SUCCES if success, NRF_ERROR* if fail
  */
 uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
-		bool doEraseBonds);
+        bool doEraseBonds);
 
 /**
  * Initialize BLE advertising module
@@ -71,8 +71,8 @@ uint32_t conn_advertisingInit(ble_uuid_t uuids[], ble_adv_evt_t advCallback);
  */
 uint32_t conn_advertisingStart(ble_adv_mode_t advMode);
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* BLECONNECTION_H */
+#endif  /* BLECONNECTION_H */

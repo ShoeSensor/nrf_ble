@@ -15,17 +15,17 @@
  */
 
 #ifndef BLECONFIG_H
-#define	BLECONFIG_H
+#define BLECONFIG_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]) + __must_be_array(arr))
 
-#define SRVC_CHANGED_CHAR_PRESENT		1                                          /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
+#define SRVC_CHANGED_CHAR_PRESENT       1                                          /**< Include or not the service_changed characteristic. if not enabled, the server's database cannot be changed for the lifetime of the device*/
 
-#define DEVICE_NAME						"ShoeSensor"                               /**< Name of device. Will be included in the advertising data. */
+#define DEVICE_NAME                     "ShoeSensor"                               /**< Name of device. Will be included in the advertising data. */
 #define MANUFACTURER_NAME               "NordicSemiconductor"                      /**< Manufacturer. Will be passed to Device Information Service. */
 #define APP_ADV_INTERVAL                300                                        /**< The advertising interval (in units of 0.625 ms. This value corresponds to 25 ms). */
 #define APP_ADV_TIMEOUT_IN_SECONDS      180                                        /**< The advertising timeout in units of seconds. */
@@ -52,8 +52,8 @@ extern "C" {
 #define DEAD_BEEF                       0xDEADBEEF                                 /**< Value used as error code on stack dump, can be used to identify stack location on stack unwind. */
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* BLECONFIG_H */
+#endif  /* BLECONFIG_H */

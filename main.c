@@ -33,5 +33,5 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 
 int main(void)
 {
-	while(1);
+    while(1);
 }

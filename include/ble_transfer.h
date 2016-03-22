@@ -15,9 +15,9 @@
  */
 
 #ifndef BLETRANSFER_H
-#define	BLETRANSFER_H
+#define BLETRANSFER_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -35,8 +35,8 @@ void ble_servicesInit();
 void ble_serviceAdd();
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* BLETRANSFER_H */
+#endif  /* BLETRANSFER_H */

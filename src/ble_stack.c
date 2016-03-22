@@ -26,39 +26,39 @@
 #include "softdevice_handler.h"
 
 uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
-		STACK_OSC_SOURCE oscSource)
+        STACK_OSC_SOURCE oscSource)
 {
-	uint32_t errCode;
-	ble_enable_params_t bleParams;
-	memset(&bleParams, 0, sizeof(bleParams));
+    uint32_t errCode;
+    ble_enable_params_t bleParams;
+    memset(&bleParams, 0, sizeof(bleParams));
 
-	switch(oscSource) {
-		case STACK_OSC_INTERNAL:
-			SOFTDEVICE_HANDLER_INIT(
-					NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_4000MS_CALIBRATION,
-					schedCallback);
-			break;
-		case STACK_OSC_EXTERNAL:
-			SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM,
-					schedCallback);
-			break;
-	}
+    switch(oscSource) {
+        case STACK_OSC_INTERNAL:
+            SOFTDEVICE_HANDLER_INIT(
+                    NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_4000MS_CALIBRATION,
+                    schedCallback);
+            break;
+        case STACK_OSC_EXTERNAL:
+            SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_XTAL_20_PPM,
+                    schedCallback);
+            break;
+    }
 
-	bleParams.gatts_enable_params.service_changed = SRVC_CHANGED_CHAR_PRESENT;
-	errCode = sd_ble_enable(&bleParams);
-	APP_ERROR_CHECK(errCode);
-	return errCode;
+    bleParams.gatts_enable_params.service_changed = SRVC_CHANGED_CHAR_PRESENT;
+    errCode = sd_ble_enable(&bleParams);
+    APP_ERROR_CHECK(errCode);
+    return errCode;
 }
 
 uint32_t stack_config(sys_evt_handler_t sysEventHandler,
-		ble_evt_handler_t bleEventHandler)
+        ble_evt_handler_t bleEventHandler)
 {
-	uint32_t errCode;
+    uint32_t errCode;
 
-	errCode = softdevice_sys_evt_handler_set(sysEventHandler);
-	APP_ERROR_CHECK(errCode);
+    errCode = softdevice_sys_evt_handler_set(sysEventHandler);
+    APP_ERROR_CHECK(errCode);
 
-	errCode = softdevice_ble_evt_handler_set(bleEventHandler);
-	APP_ERROR_CHECK(errCode);
-	return errCode;
+    errCode = softdevice_ble_evt_handler_set(bleEventHandler);
+    APP_ERROR_CHECK(errCode);
+    return errCode;
 }

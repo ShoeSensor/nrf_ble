@@ -20,9 +20,13 @@
 
 #include "ble_config.h"
 
+#ifdef  __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
-	STACK_OSC_INTERNAL = 0, /**< Use the internal RC oscillator, calibrated every 4 seconds*/
-	STACK_OSC_EXTERNAL		/**< Use an external crystal oscillator*/
+    STACK_OSC_INTERNAL = 0, /**< Use the internal RC oscillator, calibrated every 4 seconds*/
+    STACK_OSC_EXTERNAL     /**< Use an external crystal oscillator*/
 } STACK_OSC_SOURCE;
 
 /**
@@ -33,7 +37,7 @@ typedef enum {
  * @return NRF_SUCCES if succes, error code if fail.
  */
 uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
-		STACK_OSC_SOURCE oscSource);
+        STACK_OSC_SOURCE oscSource);
 
 /**
  * Configure the ble stack.
@@ -44,8 +48,10 @@ uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
  * @return NRF_SUCCES if succes, error code if fail.
  */
 uint32_t stack_config(sys_evt_handler_t sysEventHandler,
-		ble_evt_handler_t bleEventHandler);
+        ble_evt_handler_t bleEventHandler);
 
-
+#ifdef  __cplusplus
+}
+#endif
 
 #endif /* INCLUDE_BLE_STACK_H_ */
