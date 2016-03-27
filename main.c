@@ -19,6 +19,9 @@
 #include "app_error.h"
 #include "ble_config.h"
 
+
+//TODO improver error handling
+
 /**
  * Error callback for the softdevice
  * @param line_num		Line number where an error occurred
@@ -28,7 +31,6 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
 }
-
 
 
 int main(void)

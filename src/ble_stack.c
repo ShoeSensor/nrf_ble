@@ -18,7 +18,6 @@
 
 #include "nordic_common.h"
 #include "nrf.h"
-
 #include "app_error.h"
 #include "ble.h"
 #include "ble_hci.h"
