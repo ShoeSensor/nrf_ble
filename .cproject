@@ -117,6 +117,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/button&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/pstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_mma8453q/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_freertos/include&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.2016133589" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>

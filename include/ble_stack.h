@@ -36,11 +36,11 @@ typedef enum {
 /**
  * Initialize ble stack
  * @param schedCallback Event handler for ble events. This function is called
- * from an interrupt
+ * from an interrupt.
  * @param oscSource oscillator source.
  * @return NRF_SUCCES if succes, error code if fail.
  */
-uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
+uint32_t ble_stackInit(softdevice_evt_schedule_func_t schedCallback,
         STACK_OSC_SOURCE oscSource);
 
 /**
@@ -51,7 +51,7 @@ uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
  * when a BLE event is occurred/
  * @return NRF_SUCCES if succes, error code if fail.
  */
-uint32_t stack_config(sys_evt_handler_t sysEventHandler,
+uint32_t ble_stackConfig(sys_evt_handler_t sysEventHandler,
         ble_evt_handler_t bleEventHandler);
 
 #ifdef  __cplusplus

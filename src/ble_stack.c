@@ -21,17 +21,20 @@
 #include "nordic_common.h"
 #include "nrf.h"
 #include "app_error.h"
+#include "app_timer.h"
 #include "ble.h"
 #include "ble_hci.h"
 #include "ble_stack_handler_types.h"
 #include "softdevice_handler.h"
 
-uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
+uint32_t ble_stackInit(softdevice_evt_schedule_func_t schedCallback,
         STACK_OSC_SOURCE oscSource)
 {
     uint32_t errCode;
     ble_enable_params_t bleParams;
     memset(&bleParams, 0, sizeof(bleParams));
+
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
 
     switch(oscSource) {
         case STACK_OSC_INTERNAL:
@@ -51,7 +54,7 @@ uint32_t stack_init(softdevice_evt_schedule_func_t schedCallback,
     return errCode;
 }
 
-uint32_t stack_config(sys_evt_handler_t sysEventHandler,
+uint32_t ble_stackConfig(sys_evt_handler_t sysEventHandler,
         ble_evt_handler_t bleEventHandler)
 {
     uint32_t errCode;

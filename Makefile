@@ -41,14 +41,17 @@ remduplicates = $(strip $(if $1,$(firstword $1) $(call remduplicates,$(filter-ou
 INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/config)
 INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/include)
 INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_mma8453q/include)
+INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_freertos/include)
 C_SOURCE_FILES += $(abspath $(PROJ_HOME)/$(shell find ./ -type f -name '*.c'))
 C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_mma8453q/src/nrf_mma8453q.c)
+C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_freertos/src/$(shell find ../nrf_freertos/src -type f -name '*.c'))
+
 
 #source common to all targets
 C_SOURCE_FILES += \
 $(abspath $(SDK_ROOT)/components/libraries/button/app_button.c) \
 $(abspath $(SDK_ROOT)/components/libraries/util/app_error.c) \
-$(abspath $(SDK_ROOT)/components/libraries/timer/app_timer.c) \
+$(abspath $(SDK_ROOT)/components/libraries/timer/app_timer_freertos.c) \
 $(abspath $(SDK_ROOT)/components/libraries/trace/app_trace.c) \
 $(abspath $(SDK_ROOT)/components/libraries/util/nrf_assert.c) \
 $(abspath $(SDK_ROOT)/components/libraries/uart/retarget.c) \
@@ -68,6 +71,17 @@ $(abspath $(SDK_ROOT)/components/ble/common/ble_srv_common.c) \
 $(abspath $(SDK_ROOT)/components/ble/device_manager/device_manager_peripheral.c) \
 $(abspath $(SDK_ROOT)/components/toolchain/system_nrf51.c) \
 $(abspath $(SDK_ROOT)/components/softdevice/common/softdevice_handler/softdevice_handler.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/croutine.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/event_groups.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/portable/MemMang/heap_1.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/list.c) \
+$(abspath $(SDK_ROOT)/external/freertos/portable/GCC/nrf51/port.c) \
+$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51/port_cmsis.c) \
+$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51/port_cmsis_systick.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/queue.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/tasks.c) \
+$(abspath $(SDK_ROOT)/external/freertos/source/timers.c) \
+$(abspath $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c/) \
 
 #assembly files common to all targets
 ASM_SOURCE_FILES  = $(abspath $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.s)
@@ -97,6 +111,11 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/hal)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/button)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/source/include)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/GCC/nrf51)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/config)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/clock)
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)
@@ -106,9 +125,9 @@ OUTPUT_BINARY_DIRECTORY = $(OBJECT_DIRECTORY)
 BUILD_DIRECTORIES := $(sort $(OBJECT_DIRECTORY) $(OUTPUT_BINARY_DIRECTORY) $(LISTING_DIRECTORY) )
 
 ifeq ("$(DEBUG)","1")
-    CFLAGS = -DDEBUG -g3
+    CFLAGS = -DDEBUG -g3 -O0
 else
-    CFLAGS = -DNDEBUG
+    CFLAGS = -DNDEBUG -Os
 endif
 
 #flags common to all targets
@@ -120,7 +139,7 @@ CFLAGS += -DBLE_STACK_SUPPORT_REQD
 CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m0
 CFLAGS += -mthumb -mabi=aapcs --std=gnu99
-CFLAGS += -Wall -Werror -Os
+CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=soft
 # keep every function in separate section. This will allow linker to dump unused functions
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing

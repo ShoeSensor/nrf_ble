@@ -54,7 +54,7 @@ uint32_t conn_paramsInit(ble_conn_params_evt_handler_t paramsCallback);
  * information from the persistent memory during initialization.
  * @return NRF_SUCCES if success, NRF_ERROR* if fail
  */
-uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
+uint32_t conn_deviceManagerInit(dm_application_instance_t *appHandle,
         bool doEraseBonds);
 
 /**
@@ -63,7 +63,8 @@ uint32_t conn_deviceManagerInit(dm_application_instance_t appHandle,
  * @param advCallback Callback to handle the adversing events
  * @return NRF_SUCCES on success, error code otherwise
  */
-uint32_t conn_advertisingInit(ble_uuid_t uuids[], ble_adv_evt_t advCallback);
+uint32_t conn_advertisingInit(ble_uuid_t uuids[], size_t size,
+        ble_advertising_evt_handler_t advCallback);
 
 
 /**
