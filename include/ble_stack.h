@@ -18,7 +18,11 @@
 #ifndef INCLUDE_BLE_STACK_H_
 #define INCLUDE_BLE_STACK_H_
 
+#include <stdint.h>
 #include "ble_config.h"
+#include "softdevice_handler.h"
+
+#include "ble_stack_handler_types.h"
 
 #ifdef  __cplusplus
 extern "C" {

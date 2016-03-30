@@ -22,6 +22,8 @@
 #include <stdlib.h>
 
 #include "device_manager.h"
+#include "ble_conn_params.h"
+#include "ble_advertising.h"
 
 #ifdef  __cplusplus
 extern "C" {

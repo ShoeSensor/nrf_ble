@@ -18,7 +18,7 @@ RM := rm -rf
 
 #echo suspend
 ifeq ("$(VERBOSE)","1")
-NO_ECHO := 
+NO_ECHO :=
 else
 NO_ECHO := @
 endif
@@ -37,11 +37,12 @@ SIZE            := '$(GNU_INSTALL_ROOT)/bin/$(GNU_PREFIX)-size'
 remduplicates = $(strip $(if $1,$(firstword $1) $(call remduplicates,$(filter-out $(firstword $1),$1))))
 
 
-#Project specific files 
-INC_PATHS  += -I$(abspath $(PROJ_HOME)/config)
-INC_PATHS  += -I$(abspath $(PROJ_HOME)/include)
-C_SOURCE_FILES += $(abspath $(PROJ_HOME)/$(wildcard *.c))
-
+#Project specific files
+INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/config)
+INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/include)
+INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_mma8453q/include)
+C_SOURCE_FILES += $(abspath $(PROJ_HOME)/$(shell find ./ -type f -name '*.c'))
+C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_mma8453q/src/nrf_mma8453q.c)
 
 #source common to all targets
 C_SOURCE_FILES += \
@@ -55,6 +56,7 @@ $(abspath $(SDK_ROOT)/components/libraries/uart/app_uart.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/delay/nrf_delay.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c) \
+$(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master/nrf_drv_twi.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/pstorage/pstorage.c) \
 $(abspath $(SDK_ROOT)/examples/bsp/bsp.c) \
@@ -93,6 +95,8 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/delay)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/timer)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/hal)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/button)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/config)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master)
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)
@@ -214,7 +218,7 @@ genbin:
 	$(NO_ECHO)$(OBJCOPY) -O binary $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).out $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).bin
 
 ## Create binary .hex file from the .out file
-genhex: 
+genhex:
 	@echo Preparing: $(OUTPUT_FILENAME).hex
 	$(NO_ECHO)$(OBJCOPY) -O ihex $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).out $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).hex
 

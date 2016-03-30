@@ -21,6 +21,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include "nrf_mma8453q.h"
+
+#include "ble.h"
+#include "ble_types.h"
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -32,15 +37,9 @@ extern "C" {
 
 typedef struct accSrvHandle *ble_accSrvHandle_t;
 
-//TODO move this to accelerometer library
-typedef struct {
-    uint16_t x;
-    uint16_t y;
-    uint16_t z;
-} acc_data_t;
-
 typedef struct {
     ble_uuid_t uuid;
+    drv_accelHandle_t accelHandle;
 } ble_accSrvConfig_t;
 
 /**
@@ -69,7 +68,7 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent);
  *
  * @return NRF_SUCCES if succes, error code on fail.
  */
-uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, acc_data_t *accData);
+uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData);
 
 
 #ifdef  __cplusplus

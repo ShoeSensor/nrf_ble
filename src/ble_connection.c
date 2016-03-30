@@ -37,8 +37,8 @@ static void paramsErrorHandler(uint32_t errCode)
     APP_ERROR_HANDLER(errCode);
 }
 
-static uint32_t devManErrorHandler(dm_handle_t handle, dm_event_t event,
-        ret_code_t result)
+static ret_code_t devManErrorHandler(dm_handle_t const *handle,
+        dm_event_t const *event, ret_code_t result)
 {
     APP_ERROR_CHECK(result);
     return NRF_SUCCESS;
@@ -81,7 +81,7 @@ uint32_t conn_gapParamsInit(const char* deviceName)
     memset(&gapConnParams, 0, sizeof(gapConnParams));
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
 
-    errCode = sd_ble_gap_device_name_set(&sec_mode, deviceName,
+    errCode = sd_ble_gap_device_name_set(&sec_mode, (uint8_t*)deviceName,
             strlen(deviceName));
     APP_ERROR_CHECK(errCode);
 
@@ -134,7 +134,7 @@ uint32_t conn_advertisingInit(ble_uuid_t uuids[], ble_adv_evt_t advCallback)
     adverData.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; /**< Only use BLE*/
     // UUID's
     adverData.uuids_complete.p_uuids = uuids;
-    adverData.uuids_complete.uuid_cnt = ARRAY_SIZE(uuids);
+    //adverData.uuids_complete.uuid_cnt = (sizeof(uuids) / sizeof(uuids[0]));
 
     advModeConf.ble_adv_slow_enabled = BLE_ADV_SLOW_ENABLED;
     advModeConf.ble_adv_directed_slow_interval = APP_ADV_INTERVAL;

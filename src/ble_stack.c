@@ -16,6 +16,8 @@
 
 #include "ble_stack.h"
 
+#include <string.h>
+
 #include "nordic_common.h"
 #include "nrf.h"
 #include "app_error.h"

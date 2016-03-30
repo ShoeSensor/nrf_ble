@@ -16,6 +16,7 @@
 
 #include "ble_acc_service.h"
 
+#include <string.h>
 #include "nordic_common.h"
 #include "ble_srv_common.h"
 #include "ble.h"
@@ -28,18 +29,19 @@ struct accSrvHandle {
     ble_srv_cccd_security_mode_t accCharAttr;
     ble_gap_conn_sec_mode_t accReportReadPerm;
     ble_gatts_char_handles_t charHandle;
+    drv_accelHandle_t accelHandle;
 };
 
 static void onConnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 {
     handle->connHandle = bleEvent->evt.gap_evt.conn_handle;
-    // Accelerometer start
+    drv_accelEnable(handle->accelHandle);
 }
 
 static void onDisconnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 {
     handle->connHandle = BLE_CONN_HANDLE_INVALID;
-    // Accelerometer stop
+    drv_accelDisable(handle->accelHandle);
 }
 
 static void onWrite(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
@@ -56,10 +58,12 @@ ble_accSrvHandle_t ble_accSrvInit(ble_accSrvConfig_t *conf)
     ble_gatts_attr_t gattAttrVal;
 
     ble_accSrvHandle_t handle;
-    ble_uuid_t accSrvCharUuid;
+    //ble_uuid_t accSrvCharUuid;
 
     // Add services
     handle = calloc(1, sizeof(struct accSrvHandle));
+    handle->accelHandle = conf->accelHandle;
+
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&handle->accReportReadPerm);
 
     errCode = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
@@ -85,7 +89,7 @@ ble_accSrvHandle_t ble_accSrvInit(ble_accSrvConfig_t *conf)
     gattAttr.vlen = 0;
 
     memset(&gattAttrVal, 0, sizeof(gattAttrVal));
-    gattAttrVal.p_uuid = conf->uuid;
+    gattAttrVal.p_uuid = &conf->uuid;
     gattAttrVal.p_attr_md = &gattAttr;
     gattAttrVal.init_len = sizeof(uint8_t);
     gattAttrVal.max_len = sizeof(uint8_t);
@@ -116,7 +120,7 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
     }
 }
 
-uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, acc_data_t *accData)
+uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
 {
     return 0;
 }
