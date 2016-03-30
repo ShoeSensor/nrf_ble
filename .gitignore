@@ -35,9 +35,6 @@ _build/
 *~
 
 #eclipse files
-.cproject
-.project
-.settings/
 .tags*
 *.sublime-project
 *.sublime-workspace
