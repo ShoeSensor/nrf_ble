@@ -42,9 +42,11 @@ INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/config)
 INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/include)
 INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_mma8453q/include)
 INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_freertos/include)
+INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_uart/include)
 C_SOURCE_FILES += $(abspath $(PROJ_HOME)/$(shell find ./ -type f -name '*.c'))
 C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_mma8453q/src/nrf_mma8453q.c)
 C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_freertos/src/$(shell find ../nrf_freertos/src -type f -name '*.c'))
+C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_uart/src/nrf_uartDriver.c)
 
 
 #source common to all targets
@@ -58,6 +60,9 @@ $(abspath $(SDK_ROOT)/components/libraries/uart/retarget.c) \
 $(abspath $(SDK_ROOT)/components/libraries/uart/app_uart.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/delay/nrf_delay.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c) \
+$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_dis/ble_dis.c) \
+$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_bas/ble_bas.c) \
+$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_hrs/ble_hrs.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master/nrf_drv_twi.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c) \
@@ -82,6 +87,7 @@ $(abspath $(SDK_ROOT)/external/freertos/source/queue.c) \
 $(abspath $(SDK_ROOT)/external/freertos/source/tasks.c) \
 $(abspath $(SDK_ROOT)/external/freertos/source/timers.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c/) \
+$(abspath $(SDK_ROOT)/components/libraries/sensorsim/sensorsim.c) \
 
 #assembly files common to all targets
 ASM_SOURCE_FILES  = $(abspath $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.s)
@@ -95,6 +101,7 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/components/toolchain)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/common)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/common)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_advertising)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_dis)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/examples/bsp)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/trace)
@@ -116,6 +123,9 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/GCC/nrf51)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/clock)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_hrs)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_bas)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/sensorsim)
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)
@@ -253,8 +263,8 @@ cleanobj:
 	$(RM) $(BUILD_DIRECTORIES)/*.o
 
 flash: $(MAKECMDGOALS)
-	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/$<.hex
-	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/$<.hex -f nrf51  --sectorerase
+	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s110.hex
+	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s110.hex -f nrf51  --sectorerase
 	nrfjprog --reset
 
 ## Flash softdevice

@@ -38,7 +38,6 @@ extern "C" {
 typedef struct accSrvHandle *ble_accSrvHandle_t;
 
 typedef struct {
-    ble_uuid_t uuid;
     drv_accelHandle_t accelHandle;
 } ble_accSrvConfig_t;
 
@@ -70,6 +69,12 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent);
  */
 uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData);
 
+/**
+ * Get the UUID type of the service, defined in the softdevice.
+ * @param handle Handle to the service.
+ * @return UUID type.
+ */
+uint8_t ble_accSrvGetUuidType(ble_accSrvHandle_t handle);
 
 #ifdef  __cplusplus
 }

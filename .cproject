@@ -118,6 +118,8 @@
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/pstorage&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_mma8453q/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_freertos/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_uart/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/ble_services/ble_dis&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.2016133589" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>
@@ -179,4 +181,24 @@
 		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
+		<buildTargets>
+			<target name="flash_softdevice" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments/>
+				<buildTarget>flash_softdevice</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+			<target name="flash nrf51422_xxac_s110" path="" targetID="org.eclipse.cdt.build.MakeTargetBuilder">
+				<buildCommand>make</buildCommand>
+				<buildArguments/>
+				<buildTarget>flash nrf51422_xxac_s110</buildTarget>
+				<stopOnError>true</stopOnError>
+				<useDefaultCommand>false</useDefaultCommand>
+				<runAllBuilders>true</runAllBuilders>
+			</target>
+		</buildTargets>
+	</storageModule>
 </cproject>

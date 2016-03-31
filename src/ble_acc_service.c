@@ -36,13 +36,15 @@ struct accSrvHandle {
 static void onConnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 {
     handle->connHandle = bleEvent->evt.gap_evt.conn_handle;
-    drv_accelEnable(handle->accelHandle);
+    if(handle->accelHandle != NULL)
+        drv_accelEnable(handle->accelHandle);
 }
 
 static void onDisconnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 {
     handle->connHandle = BLE_CONN_HANDLE_INVALID;
-    drv_accelDisable(handle->accelHandle);
+    if(handle->accelHandle != NULL)
+        drv_accelDisable(handle->accelHandle);
 }
 
 static void onWrite(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
@@ -142,11 +144,11 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
 {
     uint32_t errCode;
-    uint8_t accelData[] = {accData->x, accData->y};
+    //uint8_t accelData[] = {accData->x, accData->y};
     ble_gatts_value_t gattAccelVal = {
-        .len = 2,
+        .len = 1,
         .offset = 0,
-        .p_value = accelData
+        .p_value = &accData->x
     };
 
     errCode = sd_ble_gatts_value_set(handle->connHandle,
@@ -157,4 +159,9 @@ uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
         return errCode;
 
     return NRF_SUCCESS;
+}
+
+uint8_t ble_accSrvGetUuidType(ble_accSrvHandle_t handle)
+{
+    return handle->uuidType;
 }
