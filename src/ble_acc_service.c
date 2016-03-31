@@ -30,6 +30,7 @@ struct accSrvHandle {
     ble_gap_conn_sec_mode_t accReportReadPerm;
     ble_gatts_char_handles_t charHandle;
     drv_accelHandle_t accelHandle;
+    uint8_t uuidType;
 };
 
 static void onConnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
@@ -56,28 +57,43 @@ ble_accSrvHandle_t ble_accSrvInit(ble_accSrvConfig_t *conf)
     ble_gatts_char_md_t gattChar;
     ble_gatts_attr_md_t gattAttr;
     ble_gatts_attr_t gattAttrVal;
+    ble_gatts_attr_md_t cccdAttr;
 
     ble_accSrvHandle_t handle;
-    //ble_uuid_t accSrvCharUuid;
+    ble_uuid_t accSrvUuid;
+    ble_uuid_t accCharUuid;
+    ble_uuid128_t baseuuid = {ACC_UUID_BASE};
 
     // Add services
     handle = calloc(1, sizeof(struct accSrvHandle));
     handle->accelHandle = conf->accelHandle;
 
+    errCode = sd_ble_uuid_vs_add(&baseuuid, &handle->uuidType);
+    APP_ERROR_CHECK(errCode);
+
+    accSrvUuid.type = handle->uuidType;
+    accSrvUuid.uuid = ACC_UUID_SERVICE;
+
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&handle->accReportReadPerm);
 
     errCode = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
-            &conf->uuid, &handle->serviceHandle);
+            &accSrvUuid, &handle->serviceHandle);
     APP_ERROR_CHECK(errCode);
 
     // Add characteristic
+
+    memset(&cccdAttr, 0, sizeof(cccdAttr));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccdAttr.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccdAttr.write_perm);
+    cccdAttr.vloc = BLE_GATTS_VLOC_STACK;
+
     memset(&gattChar, 0, sizeof(gattChar));
     gattChar.char_props.read = 1;
     gattChar.char_props.notify = 0;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_pf = NULL;
-    gattChar.p_cccd_md = NULL;
+    gattChar.p_cccd_md = &cccdAttr;
     gattChar.p_sccd_md = NULL;
 
     memset(&gattAttr, 0, sizeof(gattAttr));
@@ -88,8 +104,11 @@ ble_accSrvHandle_t ble_accSrvInit(ble_accSrvConfig_t *conf)
     gattAttr.wr_auth = 0;
     gattAttr.vlen = 0;
 
+    accCharUuid.type = handle->uuidType;
+    accCharUuid.uuid = ACC_UUID_DATA_CHAR;
+
     memset(&gattAttrVal, 0, sizeof(gattAttrVal));
-    gattAttrVal.p_uuid = &conf->uuid;
+    gattAttrVal.p_uuid = &accCharUuid;
     gattAttrVal.p_attr_md = &gattAttr;
     gattAttrVal.init_len = sizeof(uint8_t);
     gattAttrVal.max_len = sizeof(uint8_t);
@@ -122,5 +141,20 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
 
 uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
 {
-    return 0;
+    uint32_t errCode;
+    uint8_t accelData[] = {accData->x, accData->y};
+    ble_gatts_value_t gattAccelVal = {
+        .len = 2,
+        .offset = 0,
+        .p_value = accelData
+    };
+
+    errCode = sd_ble_gatts_value_set(handle->connHandle,
+            handle->charHandle.value_handle,
+            &gattAccelVal);
+
+    if(errCode != NRF_SUCCESS)
+        return errCode;
+
+    return NRF_SUCCESS;
 }
