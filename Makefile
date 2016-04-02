@@ -141,12 +141,14 @@ else
 endif
 
 #flags common to all targets
+CFLAGS += -D__STACK_SIZE=2048
+CFLAGS += -D__HEAP_SIZE=1024
+CFLAGS += -DFREERTOS
 CFLAGS += -DBOARD_PCA10028
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DNRF51
 CFLAGS += -DS110
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
-CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m0
 CFLAGS += -mthumb -mabi=aapcs --std=gnu99
 CFLAGS += -Wall -Werror
@@ -165,13 +167,14 @@ LDFLAGS += -Wl,--gc-sections
 LDFLAGS += --specs=nano.specs -lc -lnosys
 
 # Assembler flags
+ASMFLAGS += -D__STACK_SIZE=2048
+ASMFLAGS += -D__HEAP_SIZE=1024
 ASMFLAGS += -x assembler-with-cpp
 ASMFLAGS += -DBOARD_PCA10028
 ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DNRF51
 ASMFLAGS += -DS110
 ASMFLAGS += -DBLE_STACK_SUPPORT_REQD
-ASMFLAGS += -DSWI_DISABLE0
 #default target - first one defined
 default: clean nrf51422_xxac_s110
 
