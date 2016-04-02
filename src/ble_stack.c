@@ -34,7 +34,7 @@ uint32_t ble_stackInit(softdevice_evt_schedule_func_t schedCallback,
     ble_enable_params_t bleParams;
     memset(&bleParams, 0, sizeof(bleParams));
 
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+    //APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
 
     switch(oscSource) {
         case STACK_OSC_INTERNAL:
