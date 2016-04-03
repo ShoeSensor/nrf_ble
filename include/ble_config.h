@@ -33,8 +33,8 @@ extern "C" {
 #define APP_TIMER_PRESCALER                 0                                   /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE             4                                   /**< Size of timer operation queues. */
 
-#define MIN_CONN_INTERVAL                   MSEC_TO_UNITS(400, UNIT_1_25_MS)    /**< Minimum acceptable connection interval (0.4 seconds). */
-#define MAX_CONN_INTERVAL                   MSEC_TO_UNITS(650, UNIT_1_25_MS)    /**< Maximum acceptable connection interval (0.65 second). */
+#define MIN_CONN_INTERVAL                   MSEC_TO_UNITS(10, UNIT_1_25_MS)    /**< Minimum acceptable connection interval (10 ms). */
+#define MAX_CONN_INTERVAL                   MSEC_TO_UNITS(50, UNIT_1_25_MS)    /**< Maximum acceptable connection interval (50 ms). */
 #define SLAVE_LATENCY                       0                                   /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                    MSEC_TO_UNITS(4000, UNIT_10_MS)     /**< Connection supervisory time-out (4 seconds). */
 
