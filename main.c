@@ -244,7 +244,7 @@ int main(void)
     };
     mainThreadHandle = os_threadNew(&mainThreadConf);
 
-    /* Activate deep sleep mode */
+    // Activate deep sleep mode
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
 
     // Start FreeRTOS scheduler.

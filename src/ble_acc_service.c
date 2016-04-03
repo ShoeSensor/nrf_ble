@@ -206,13 +206,13 @@ uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
     ble_gatts_value_t gattXVal = {
         .len = 1,
         .offset = 0,
-        .p_value = &accData->x
+        .p_value = (uint8_t*)&accData->x
     };
 
     ble_gatts_value_t gattYVal = {
         .len = 1,
         .offset = 0,
-        .p_value = &accData->y
+        .p_value = (uint8_t*)&accData->y
     };
 
     errCode = sd_ble_gatts_value_set(handle->connHandle,
