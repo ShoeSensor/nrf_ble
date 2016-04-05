@@ -53,6 +53,7 @@ extern "C" {
 
 #define OSTIMER_WAIT_FOR_QUEUE              2                                   /**< Number of ticks to wait for the timer queue to be ready */
 
+#define ACCEL_BUF_SIZE                      50
 
 #ifdef  __cplusplus
 }

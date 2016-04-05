@@ -42,6 +42,10 @@ static ble_uuid_t advUuids[] = {
 static os_timerHandle_t accelSrvTimer;
 static os_semHandle_t bleEventReady;
 static os_threadHandle_t mainThreadHandle;
+static os_threadHandle_t sampleThreadHandle;
+static drv_accelHandle_t accelHandle;
+static drv_accelData_t *accelBuf;
+static uint8_t accelBufIndex = 0;
 
 // Softdevice error handler
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
@@ -51,15 +55,13 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 
 static void accSrVTimeout(void *args)
 {
-    drv_accelData_t accelData;
-    accelData.x = rand() % 255;
-    accelData.y = rand() % 255;
-    accelData.z = 0;
-    ble_accSrvUpdate(accSrvHandle, &accelData);
+    if(!accelBuf[0].failed)
+        ble_accSrvUpdate(accSrvHandle, &accelBuf[0]);
+    accelBufIndex = (accelBufIndex == 0) ? 0 : accelBufIndex - 1;
 }
 
-/**@brief Function for the Timer initialization.
- *
+/**
+ * @brief Function for the Timer initialization.
  * @details Initializes the timer module. This creates and starts application timers.
  */
 static void timersInit(void)
@@ -69,27 +71,27 @@ static void timersInit(void)
 
     os_timerConfig_t timerConf = {
             .name = "ACS",
-            .period = 500,
+            .period = 10,
             .oneShot = false,
             .callback = accSrVTimeout
     };
     accelSrvTimer = os_timerTaskNew(&timerConf, OSTIMER_WAIT_FOR_QUEUE);
 
-    /* Error checking */
     if (accelSrvTimer == NULL)
         APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 }
 
-/**@brief Function for starting application timers.
+/**
+ * @brief Function for starting application timers.
  */
 static void timerTasksStart(void)
 {
     os_timerTaskStart(accelSrvTimer);
 }
 
-/**@brief Function for initializing services that will be used by the application.
- *
- * @details Initialize the Heart Rate, Battery and Device Information services.
+/**
+ * @brief Function for initializing services that will be used by the application.
+ * @details Initialize the Device Information and accelerometer service.
  */
 static void servicesInit(void)
 {
@@ -108,20 +110,10 @@ static void servicesInit(void)
     errCode = ble_dis_init(&dis_init);
     APP_ERROR_CHECK(errCode);
 
-    ble_accSrvConfig_t accSrvConf = { .accelHandle = NULL };
+    ble_accSrvConfig_t accSrvConf = { .accelHandle = accelHandle };
     accSrvHandle = ble_accSrvInit(&accSrvConf);
 }
 
-/**@brief Function for handling the Connection Parameters Module.
- *
- * @details This function will be called for all events in the Connection Parameters Module which
- *          are passed to the application.
- *          @note All this function does is to disconnect. This could have been done by simply
- *                setting the disconnect_on_fail config parameter, but instead we use the event
- *                handler mechanism to demonstrate its use.
- *
- * @param[in]   p_evt   Event received from the Connection Parameters Module.
- */
 static void onConnParamsEvt(ble_conn_params_evt_t * p_evt)
 {
     if (p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED) {
@@ -153,13 +145,6 @@ static void onBlEevent(ble_evt_t * p_ble_evt)
     }
 }
 
-/**@brief Function for dispatching a BLE stack event to all modules with a BLE stack event handler.
- *
- * @details This function is called from the BLE Stack event interrupt handler after a BLE stack
- *          event has been received.
- *
- * @param[in]   p_ble_evt   Bluetooth stack event.
- */
 static void bleEventDispatch(ble_evt_t * p_ble_evt)
 {
     dm_ble_evt_handler(p_ble_evt);
@@ -169,28 +154,12 @@ static void bleEventDispatch(ble_evt_t * p_ble_evt)
     ble_advertising_on_ble_evt(p_ble_evt);
 }
 
-/**@brief Function for dispatching a system event to interested modules.
- *
- * @details This function is called from the System event interrupt handler after a system
- *          event has been received.
- *
- * @param[in]   sys_evt   System stack event.
- */
 static void sysEventDispatch(uint32_t sys_evt)
 {
     pstorage_sys_event_handler(sys_evt);
     ble_advertising_on_sys_evt(sys_evt);
 }
 
-/**
- * @brief Event handler for new BLE events
- *
- * This function is called from the SoftDevice handler.
- * It is called from interrupt level.
- *
- * @return The returned value is checked in the softdevice_handler module,
- *         using the APP_ERROR_CHECK macro.
- */
 static uint32_t bleNewEventHandler(void)
 {
     os_semIsrPost(bleEventReady);
@@ -221,10 +190,22 @@ static void mainThread(void * arg)
         while (os_semIsrWait(bleEventReady) == false);
         intern_softdevice_events_execute();
     }
+
+    os_threadExit(mainThreadHandle);
 }
 
-/**@brief Function for application main entry.
- */
+static void sampleThread(void *args)
+{
+    // accocate memory for constant buffering
+    accelBuf = calloc(ACCEL_BUF_SIZE, sizeof(drv_accelData_t));
+    while(1) {
+        accelBuf[accelBufIndex] = drv_accelRead(accelHandle);
+        accelBufIndex++ % ACCEL_BUF_SIZE;
+    }
+    os_threadExit(sampleThreadHandle);
+}
+
+
 int main(void)
 {
     os_semConfig_t semConf;
@@ -234,15 +215,39 @@ int main(void)
     if (bleEventReady == NULL)
         APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 
-    // Threads are broken
+    drv_twiConfig_t twiConf = {
+        .sdaPin = TWI0_CONFIG_SDA,
+        .sclPin = TWI0_CONFIG_SCL,
+        .twiFreq = TWI0_CONFIG_FREQUENCY,
+        .id = TWI0_INSTANCE_INDEX,
+        .enable = true
+    };
+    drv_accelConfig_t accelConf = {
+        .gRange = FULL_SCALE_RANGE_4g,
+        .highRes = false,
+        .address = 0x00,
+        .samplingRate = DATA_RATE_400
+    };
+
+    accelHandle = drv_accelInit(&twiConf);
+    drv_accelConfigure(accelHandle, &accelConf);
+
     os_threadConfig_t mainThreadConf = {
-            .name = "MT",
-            .threadCallback = &mainThread,
-            .threadArgs = NULL,
-            .stackSize = STACK_SIZE_BIG,
-            .priority = THREAD_PRIO_NORM
+        .name = "MT",
+        .threadCallback = &mainThread,
+        .threadArgs = NULL,
+        .stackSize = STACK_SIZE_BIG,
+        .priority = THREAD_PRIO_NORM
+    };
+    os_threadConfig_t sampleThreadConf = {
+        .name = "ST",
+        .threadCallback = &sampleThread,
+        .threadArgs = NULL,
+        .stackSize = STACK_SIZE_BIG,
+        .priority = THREAD_PRIO_NORM
     };
     mainThreadHandle = os_threadNew(&mainThreadConf);
+    sampleThreadHandle = os_threadNew(&sampleThreadConf);
 
     // Activate deep sleep mode
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
