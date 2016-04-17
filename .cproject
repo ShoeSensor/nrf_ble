@@ -120,6 +120,7 @@
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_freertos/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_uart/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/ble_services/ble_dis&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/fifo&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.2016133589" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>

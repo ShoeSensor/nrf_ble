@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+/** @file
+ * @defgroup ble_conn BLE connection
+ * @{
+ * @ingroup ble
+ *
+ * @brief Takes care of initialzing everything related to connection devices.
+ *
+ */
+
 #ifndef BLECONNECTION_H
 #define BLECONNECTION_H
 
@@ -79,3 +88,7 @@ uint32_t conn_advertisingStart(ble_adv_mode_t advMode);
 #endif
 
 #endif  /* BLECONNECTION_H */
+
+/**
+ *@}
+ **/

@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "app_error.h"
+#include "app_fifo.h"
 #include "ble.h"
 #include "ble_acc_service.h"
 #include "ble_connection.h"
@@ -27,13 +28,15 @@
 #include "nordic_common.h"
 #include "nrf.h"
 #include "nrf_mma8453q.h"
+#include "nrf_uartDriver.h"
 #include "os_semaphore.h"
 #include "os_thread.h"
 #include "os_timer.h"
 #include "pstorage.h"
 #include "softdevice_handler.h"
 
-static uint16_t connHanle = BLE_CONN_HANDLE_INVALID;
+static char uartBuf[20];
+static uint16_t connHandle = BLE_CONN_HANDLE_INVALID;
 static ble_accSrvHandle_t accSrvHandle;
 static dm_application_instance_t appHandle;
 static ble_uuid_t advUuids[] = {
@@ -42,10 +45,13 @@ static ble_uuid_t advUuids[] = {
 static os_timerHandle_t accelSrvTimer;
 static os_semHandle_t bleEventReady;
 static os_threadHandle_t mainThreadHandle;
-static os_threadHandle_t sampleThreadHandle;
+
 static drv_accelHandle_t accelHandle;
-static drv_accelData_t *accelBuf;
-static uint8_t accelBufIndex = 0;
+static drv_accelData_t accelData;
+static app_fifo_t accelXFifo;
+static app_fifo_t accelYFifo;
+static uint8_t *accelXBuf;
+static uint8_t *accelYBuf;
 
 // Softdevice error handler
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
@@ -55,9 +61,10 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 
 static void accSrVTimeout(void *args)
 {
-    if(!accelBuf[0].failed)
-        ble_accSrvUpdate(accSrvHandle, &accelBuf[0]);
-    accelBufIndex = (accelBufIndex == 0) ? 0 : accelBufIndex - 1;
+    drv_accelData_t data;
+    app_fifo_get(&accelXFifo, (uint8_t *)&data.x);
+    app_fifo_get(&accelYFifo, (uint8_t *)&data.y);
+    ble_accSrvUpdate(accSrvHandle, &data);
 }
 
 /**
@@ -117,7 +124,7 @@ static void servicesInit(void)
 static void onConnParamsEvt(ble_conn_params_evt_t * p_evt)
 {
     if (p_evt->evt_type == BLE_CONN_PARAMS_EVT_FAILED) {
-        uint32_t errCode = sd_ble_gap_disconnect(connHanle,
+        uint32_t errCode = sd_ble_gap_disconnect(connHandle,
                 BLE_HCI_CONN_INTERVAL_UNACCEPTABLE);
         APP_ERROR_CHECK(errCode);
     }
@@ -135,10 +142,11 @@ static void onBlEevent(ble_evt_t * p_ble_evt)
 {
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
-            connHanle = p_ble_evt->evt.gap_evt.conn_handle;
+            connHandle = p_ble_evt->evt.gap_evt.conn_handle;
+            uart_write("Connected", strlen("Connected"));
             break;
         case BLE_GAP_EVT_DISCONNECTED:
-            connHanle = BLE_CONN_HANDLE_INVALID;
+            connHandle = BLE_CONN_HANDLE_INVALID;
             break;
         default:
             break;
@@ -170,7 +178,7 @@ static void mainThread(void * arg)
 {
     uint32_t errCode;
     UNUSED_PARAMETER(arg);
-
+    uart_write("init", strlen("init"));
     // Initialize.
     timersInit();
     ble_stackInit(bleNewEventHandler, STACK_OSC_EXTERNAL);
@@ -185,36 +193,6 @@ static void mainThread(void * arg)
     errCode = conn_advertisingStart(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(errCode);
 
-    while (1) {
-        /* Wait for event from SoftDevice */
-        while (os_semIsrWait(bleEventReady) == false);
-        intern_softdevice_events_execute();
-    }
-
-    os_threadExit(mainThreadHandle);
-}
-
-static void sampleThread(void *args)
-{
-    // accocate memory for constant buffering
-    accelBuf = calloc(ACCEL_BUF_SIZE, sizeof(drv_accelData_t));
-    while(1) {
-        accelBuf[accelBufIndex] = drv_accelRead(accelHandle);
-        accelBufIndex++ % ACCEL_BUF_SIZE;
-    }
-    os_threadExit(sampleThreadHandle);
-}
-
-
-int main(void)
-{
-    os_semConfig_t semConf;
-    semConf.binary = true;
-    bleEventReady = os_semNew(&semConf);
-
-    if (bleEventReady == NULL)
-        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
-
     drv_twiConfig_t twiConf = {
         .sdaPin = TWI0_CONFIG_SDA,
         .sclPin = TWI0_CONFIG_SCL,
@@ -225,12 +203,43 @@ int main(void)
     drv_accelConfig_t accelConf = {
         .gRange = FULL_SCALE_RANGE_4g,
         .highRes = false,
-        .address = 0x00,
-        .samplingRate = DATA_RATE_400
+        .address = 0x1D,
+        .samplingRate = DATA_RATE_800
     };
 
     accelHandle = drv_accelInit(&twiConf);
     drv_accelConfigure(accelHandle, &accelConf);
+
+    accelXBuf = calloc(ACCEL_BUF_SIZE, sizeof(uint8_t));
+    accelYBuf = calloc(ACCEL_BUF_SIZE, sizeof(uint8_t));
+    app_fifo_init(&accelXFifo, accelXBuf, sizeof(accelXBuf));
+    app_fifo_init(&accelYFifo, accelYBuf, sizeof(accelYBuf));
+
+    while (1) {
+        /* Wait for event from SoftDevice */
+        if(os_semTryWait(bleEventReady)) {
+            intern_softdevice_events_execute();
+        } else {
+            accelData = drv_accelRead(accelHandle);
+            if(!accelData.failed) {
+                app_fifo_put(&accelXFifo, accelData.x);
+                app_fifo_put(&accelYFifo, accelData.y);
+                sprintf(uartBuf, "X: %d Y: %d Z: %d\r\n", accelData.x, accelData.y, accelData.z);
+                uart_write(uartBuf, strlen(uartBuf));
+            }
+        }
+    }
+    os_threadExit(mainThreadHandle);
+}
+
+int main(void)
+{
+    os_semConfig_t semConf;
+    semConf.binary = true;
+    bleEventReady = os_semNew(&semConf);
+    uart_init();
+    if (bleEventReady == NULL)
+        APP_ERROR_HANDLER(NRF_ERROR_NO_MEM);
 
     os_threadConfig_t mainThreadConf = {
         .name = "MT",
@@ -239,18 +248,11 @@ int main(void)
         .stackSize = STACK_SIZE_BIG,
         .priority = THREAD_PRIO_NORM
     };
-    os_threadConfig_t sampleThreadConf = {
-        .name = "ST",
-        .threadCallback = &sampleThread,
-        .threadArgs = NULL,
-        .stackSize = STACK_SIZE_BIG,
-        .priority = THREAD_PRIO_NORM
-    };
+
     mainThreadHandle = os_threadNew(&mainThreadConf);
-    sampleThreadHandle = os_threadNew(&sampleThreadConf);
 
     // Activate deep sleep mode
-    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+    // SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
 
     // Start FreeRTOS scheduler.
     os_startScheduler();

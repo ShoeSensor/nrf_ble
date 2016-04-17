@@ -88,6 +88,7 @@ $(abspath $(SDK_ROOT)/external/freertos/source/tasks.c) \
 $(abspath $(SDK_ROOT)/external/freertos/source/timers.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c/) \
 $(abspath $(SDK_ROOT)/components/libraries/sensorsim/sensorsim.c) \
+$(abspath $(SDK_ROOT)/components/libraries/fifo/app_fifo.c)
 
 #assembly files common to all targets
 ASM_SOURCE_FILES  = $(abspath $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.s)
@@ -123,9 +124,7 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/GCC/nrf51)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/clock)
-INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_hrs)
-INC_PATHS += -I$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_bas)
-INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/sensorsim)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/fifo)
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)

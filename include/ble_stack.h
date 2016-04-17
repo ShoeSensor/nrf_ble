@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+/**
+ * @defgroup ble Bluetooth Smart
+ * @brief BLE libraries
+ *
+ * @file
+ * @defgroup ble_stack BLE stack
+ * @{
+ * @ingroup ble
+ *
+ * @brief Bluetooth stack initialization
+ *
+ */
 
 #ifndef INCLUDE_BLE_STACK_H_
 #define INCLUDE_BLE_STACK_H_
@@ -59,3 +71,7 @@ uint32_t ble_stackConfig(sys_evt_handler_t sysEventHandler,
 #endif
 
 #endif /* INCLUDE_BLE_STACK_H_ */
+
+/**
+ *@}
+ **/

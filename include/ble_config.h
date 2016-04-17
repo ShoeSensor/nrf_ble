@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/** @file
+ * @defgroup ble_config BLE configuration
+ * @{
+ * @ingroup ble
+ *
+ * @brief Bluetooth stack constants
+ *
+ */
 #ifndef BLECONFIG_H
 #define BLECONFIG_H
 
@@ -53,10 +61,14 @@ extern "C" {
 
 #define OSTIMER_WAIT_FOR_QUEUE              2                                   /**< Number of ticks to wait for the timer queue to be ready */
 
-#define ACCEL_BUF_SIZE                      50
+#define ACCEL_BUF_SIZE                      64
 
 #ifdef  __cplusplus
 }
 #endif
 
 #endif  /* BLECONFIG_H */
+
+/**
+ *@}
+ **/

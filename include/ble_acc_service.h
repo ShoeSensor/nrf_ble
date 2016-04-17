@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/** @file
+ * @defgroup ble_service BLE services
+ * @{
+ * @ingroup ble
+ * @brief Accelerometer BLE service
+ *
+ */
+
 #ifndef BLETRANSFER_H
 #define BLETRANSFER_H
 
@@ -82,3 +90,7 @@ uint8_t ble_accSrvGetUuidType(ble_accSrvHandle_t handle);
 #endif
 
 #endif  /* BLETRANSFER_H */
+
+/**
+ *@}
+ **/
