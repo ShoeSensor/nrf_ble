@@ -88,13 +88,16 @@ $(abspath $(SDK_ROOT)/external/freertos/source/tasks.c) \
 $(abspath $(SDK_ROOT)/external/freertos/source/timers.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/clock/nrf_drv_clock.c/) \
 $(abspath $(SDK_ROOT)/components/libraries/sensorsim/sensorsim.c) \
-$(abspath $(SDK_ROOT)/components/libraries/fifo/app_fifo.c)
+$(abspath $(SDK_ROOT)/components/libraries/fifo/app_fifo.c) \
+$(abspath $(SDK_ROOT)/components/libraries/util/app_util_platform.c) \
+$(abspath $(SDK_ROOT)/components/libraries/fstorage/fstorage.c) \
 
 #assembly files common to all targets
 ASM_SOURCE_FILES  = $(abspath $(SDK_ROOT)/components/toolchain/gcc/gcc_startup_nrf51.s)
 
 #includes common to all targets
-
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/fstorage/config)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/fstorage)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/util)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/pstorage)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/toolchain/gcc)
@@ -112,7 +115,7 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/uart)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/uart)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/device)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/softdevice/common/softdevice_handler)
-INC_PATHS += -I$(abspath $(SDK_ROOT)/components/softdevice/s110/headers)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/experimental_section_vars)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/delay)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/timer)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/hal)
@@ -121,10 +124,13 @@ INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/source/include)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/CMSIS/nrf51)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/toolchain/CMSIS/Include)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/portable/GCC/nrf51)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/external/freertos/config)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/drivers_nrf/clock)
 INC_PATHS += -I$(abspath $(SDK_ROOT)/components/libraries/fifo)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/softdevice/s130/headers/nrf51)
+INC_PATHS += -I$(abspath $(SDK_ROOT)/components/softdevice/s130/headers)
 
 OBJECT_DIRECTORY = _build
 LISTING_DIRECTORY = $(OBJECT_DIRECTORY)
@@ -136,7 +142,7 @@ BUILD_DIRECTORIES := $(sort $(OBJECT_DIRECTORY) $(OUTPUT_BINARY_DIRECTORY) $(LIS
 ifeq ("$(DEBUG)","1")
     CFLAGS = -DDEBUG -g3 -O0
 else
-    CFLAGS = -DNDEBUG -Os
+    CFLAGS = -DNDEBUG -Os -Werror
 endif
 
 #flags common to all targets
@@ -146,11 +152,11 @@ CFLAGS += -DFREERTOS
 CFLAGS += -DBOARD_PCA10028
 CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DNRF51
-CFLAGS += -DS110
+CFLAGS += -DS130
 CFLAGS += -DBLE_STACK_SUPPORT_REQD
 CFLAGS += -mcpu=cortex-m0
 CFLAGS += -mthumb -mabi=aapcs --std=gnu99
-CFLAGS += -Wall -Werror
+CFLAGS += -Wall
 CFLAGS += -mfloat-abi=soft
 # keep every function in separate section. This will allow linker to dump unused functions
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
@@ -172,21 +178,21 @@ ASMFLAGS += -x assembler-with-cpp
 ASMFLAGS += -DBOARD_PCA10028
 ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DNRF51
-ASMFLAGS += -DS110
+ASMFLAGS += -DS130
 ASMFLAGS += -DBLE_STACK_SUPPORT_REQD
 #default target - first one defined
-default: clean nrf51422_xxac_s110
+default: clean nrf51422_xxac_s130
 
 #building all targets
 
 all: clean
 	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e cleanobj
-	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e nrf51422_xxac_s110
+	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e nrf51422_xxac_s130
 
 #target for printing all targets
 help:
 	@echo following targets are available:
-	@echo 	nrf51422_xxac_s110
+	@echo 	nrf51422_xxac_s130
 	@echo 	flash_softdevice
 
 
@@ -203,9 +209,9 @@ vpath %.s $(ASM_PATHS)
 
 OBJECTS = $(C_OBJECTS) $(ASM_OBJECTS)
 
-nrf51422_xxac_s110: OUTPUT_FILENAME := nrf51422_xxac_s110
-nrf51422_xxac_s110: LINKER_SCRIPT=config/ble_app_template_gcc_nrf51.ld
-nrf51422_xxac_s110: $(BUILD_DIRECTORIES) $(OBJECTS)
+nrf51422_xxac_s130: OUTPUT_FILENAME := nrf51422_xxac_s130
+nrf51422_xxac_s130: LINKER_SCRIPT=config/ble_app_template_gcc_nrf51.ld
+nrf51422_xxac_s130: $(BUILD_DIRECTORIES) $(OBJECTS)
 	@echo Linking target: $(OUTPUT_FILENAME).out
 	$(NO_ECHO)$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).out
 	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e finalize
@@ -265,12 +271,12 @@ cleanobj:
 	$(RM) $(BUILD_DIRECTORIES)/*.o
 
 flash: $(MAKECMDGOALS)
-	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s110.hex
-	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s110.hex -f nrf51  --sectorerase
+	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s130.hex
+	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/nrf51422_xxac_s130.hex -f nrf51  --sectorerase
 	nrfjprog --reset
 
 ## Flash softdevice
 flash_softdevice:
-	@echo Flashing: s110_nrf51_8.0.0_softdevice.hex
-	nrfjprog --program $(SDK_ROOT)/components/softdevice/s110/hex/s110_nrf51_8.0.0_softdevice.hex -f nrf51 --chiperase
-	nrfjprog --reset
+	@echo Flashing: s130_nrf51_8.0.0_softdevice.hex
+	nrfjprog --program $(SDK_ROOT)/components/softdevice/s130/hex/s130_nrf51_2.0.0_softdevice.hex -f nrf51 --chiperase
+	nrfjprog --reset -f nrf51

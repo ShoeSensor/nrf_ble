@@ -41,8 +41,14 @@ extern "C" {
 #define APP_TIMER_PRESCALER                 0                                   /**< Value of the RTC1 PRESCALER register. */
 #define APP_TIMER_OP_QUEUE_SIZE             4                                   /**< Size of timer operation queues. */
 
-#define MIN_CONN_INTERVAL                   MSEC_TO_UNITS(10, UNIT_1_25_MS)    /**< Minimum acceptable connection interval (10 ms). */
-#define MAX_CONN_INTERVAL                   MSEC_TO_UNITS(50, UNIT_1_25_MS)    /**< Maximum acceptable connection interval (50 ms). */
+#define CENTRAL_LINK_COUNT                   0                                  /**< Number of central links used by the application. When changing this number remember to adjust the RAM settings*/
+#define PERIPHERAL_LINK_COUNT                1                                  /**< Number of peripheral links used by the application. When changing this number remember to adjust the RAM settings*/
+
+#define SEC_PARAM_LESC                       0                                  /**< LE Secure Connections not enabled. */
+#define SEC_PARAM_KEYPRESS                   0                                  /**< Keypress notifications not enabled. */
+
+#define MIN_CONN_INTERVAL                   MSEC_TO_UNITS(10, UNIT_1_25_MS)    	/**< Minimum acceptable connection interval (10 ms). */
+#define MAX_CONN_INTERVAL                   MSEC_TO_UNITS(50, UNIT_1_25_MS)    	/**< Maximum acceptable connection interval (50 ms). */
 #define SLAVE_LATENCY                       0                                   /**< Slave latency. */
 #define CONN_SUP_TIMEOUT                    MSEC_TO_UNITS(4000, UNIT_10_MS)     /**< Connection supervisory time-out (4 seconds). */
 
