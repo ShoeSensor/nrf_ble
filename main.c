@@ -46,7 +46,6 @@ static os_timerHandle_t accelSrvTimer;
 static os_semHandle_t bleEventReady;
 static os_threadHandle_t mainThreadHandle;
 
-static drv_accelHandle_t accelHandle;
 static app_fifo_t accelXFifo;
 static app_fifo_t accelYFifo;
 static uint8_t *accelXBuf;
@@ -58,12 +57,6 @@ static char uartBuf[20];
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
     app_error_handler(DEAD_BEEF, line_num, p_file_name);
-}
-
-void readHandler(drv_accelData_t accelData)
-{
-    app_fifo_put(&accelXFifo, accelData.x);
-    app_fifo_put(&accelYFifo, accelData.y);
 }
 
 static void accSrVTimeout(void *args)
@@ -129,7 +122,7 @@ static void servicesInit(void)
     errCode = ble_dis_init(&dis_init);
     APP_ERROR_CHECK(errCode);
 
-    ble_accSrvConfig_t accSrvConf = { .accelHandle = accelHandle };
+    ble_accSrvConfig_t accSrvConf = { .accelHandle = NULL };
     accSrvHandle = ble_accSrvInit(&accSrvConf);
 }
 
@@ -184,7 +177,7 @@ static void sysEventDispatch(uint32_t sys_evt)
 
 static uint32_t bleNewEventHandler(void)
 {
-    os_semIsrPost(bleEventReady);
+    os_threadIsrNotify(mainThreadHandle);
     return NRF_SUCCESS;
 }
 
@@ -202,32 +195,15 @@ static void mainThread(void * arg)
     servicesInit();
     conn_paramsInit(onConnParamsEvt);
 
-    // drv_twiConfig_t twiConf = {
-    //     .sdaPin = TWI0_CONFIG_SDA,
-    //     .sclPin = TWI0_CONFIG_SCL,
-    //     .twiFreq = TWI0_CONFIG_FREQUENCY,
-    //     .id = TWI0_INSTANCE_INDEX,
-    //     .enable = true
-    // };
-    // drv_accelConfig_t accelConf = {
-    //     .gRange = FULL_SCALE_RANGE_4g,
-    //     .highRes = false,
-    //     .address = 0x1D,
-    //     .samplingRate = DATA_RATE_800,
-    // };
-
-    // accelHandle = drv_accelInit(&twiConf);
-    // drv_accelConfigure(accelHandle, &accelConf, readHandler);
-
     timerTasksStart();
     errCode = conn_advertisingStart(BLE_ADV_MODE_FAST);
     APP_ERROR_CHECK(errCode);
 
     while (1) {
         /* Wait for event from SoftDevice */
-        if(os_semWait(bleEventReady)) {
-            intern_softdevice_events_execute();
-        }
+        os_threadWait();
+        intern_softdevice_events_execute();
+
     }
     os_threadExit(mainThreadHandle);
 }
