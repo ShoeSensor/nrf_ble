@@ -91,7 +91,7 @@
 #define configTICK_SOURCE FREERTOS_USE_RTC
 
 #define configUSE_PREEMPTION                        1
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION     0
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION     1
 #define configUSE_TICKLESS_IDLE                     1
 #define configCPU_CLOCK_HZ                          ( SystemCoreClock )
 #define configTICK_RATE_HZ                          1000
@@ -164,12 +164,8 @@
 #define INCLUDE_xTimerPendFunctionCall              1
 
 /* The lowest interrupt priority that can be used in a call to a "set priority"
- function. */
-#ifdef SOFTDEVICE_PRESENT
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY     3
-#else
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY     0xf
-#endif
+function. */
+#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0xf
 
 /* The highest interrupt priority that can be used by any interrupt service
  routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL

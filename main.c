@@ -202,22 +202,22 @@ static void mainThread(void * arg)
     servicesInit();
     conn_paramsInit(onConnParamsEvt);
 
-    drv_twiConfig_t twiConf = {
-        .sdaPin = TWI0_CONFIG_SDA,
-        .sclPin = TWI0_CONFIG_SCL,
-        .twiFreq = TWI0_CONFIG_FREQUENCY,
-        .id = TWI0_INSTANCE_INDEX,
-        .enable = true
-    };
-    drv_accelConfig_t accelConf = {
-        .gRange = FULL_SCALE_RANGE_4g,
-        .highRes = false,
-        .address = 0x1D,
-        .samplingRate = DATA_RATE_800,
-    };
+    // drv_twiConfig_t twiConf = {
+    //     .sdaPin = TWI0_CONFIG_SDA,
+    //     .sclPin = TWI0_CONFIG_SCL,
+    //     .twiFreq = TWI0_CONFIG_FREQUENCY,
+    //     .id = TWI0_INSTANCE_INDEX,
+    //     .enable = true
+    // };
+    // drv_accelConfig_t accelConf = {
+    //     .gRange = FULL_SCALE_RANGE_4g,
+    //     .highRes = false,
+    //     .address = 0x1D,
+    //     .samplingRate = DATA_RATE_800,
+    // };
 
-    accelHandle = drv_accelInit(&twiConf);
-    drv_accelConfigure(accelHandle, &accelConf, readHandler);
+    // accelHandle = drv_accelInit(&twiConf);
+    // drv_accelConfigure(accelHandle, &accelConf, readHandler);
 
     timerTasksStart();
     errCode = conn_advertisingStart(BLE_ADV_MODE_FAST);
@@ -225,10 +225,8 @@ static void mainThread(void * arg)
 
     while (1) {
         /* Wait for event from SoftDevice */
-        if(os_semTryWait(bleEventReady)) {
+        if(os_semWait(bleEventReady)) {
             intern_softdevice_events_execute();
-        } else if(isConnected) {
-            drv_accelRead(accelHandle);
         }
     }
     os_threadExit(mainThreadHandle);
