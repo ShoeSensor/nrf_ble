@@ -121,6 +121,46 @@
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_uart/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/ble_services/ble_dis&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/fifo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/fstorage/config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/fstorage&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/util&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/pstorage&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/toolchain/gcc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/toolchain&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/ble_advertising&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/ble_services/ble_dis&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/examples/bsp&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/trace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/gpiote&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/ble/device_manager&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/uart&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/uart&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/device&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/softdevice/common/softdevice_handler&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/experimental_section_vars&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/delay&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/timer&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/button&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/twi_master&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/external/freertos/source/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/external/freertos/portable/CMSIS/nrf52&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/toolchain/CMSIS/Include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/external/freertos/portable/GCC/nrf52&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/external/freertos/config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/drivers_nrf/clock&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/libraries/fifo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/softdevice/s132/headers/nrf52&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/components/softdevice/s132/headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_ble/config&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_ble/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_mma8453q/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_freertos/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${SDK_ROOT}/apps/nrf_uart/include&quot;"/>
 								</option>
 								<inputType id="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input.2016133589" superClass="ilg.gnuarmeclipse.managedbuild.cross.tool.c.compiler.input"/>
 							</tool>

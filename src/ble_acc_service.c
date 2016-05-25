@@ -30,6 +30,7 @@ struct accSrvHandle {
     ble_gap_conn_sec_mode_t accReportReadPerm;
     ble_gatts_char_handles_t charXHandle;
     ble_gatts_char_handles_t charYHandle;
+    ble_gatts_char_handles_t charZHandle;
     drv_accelHandle_t accelHandle;
     uint8_t uuidType;
 };
@@ -48,11 +49,6 @@ static void onDisconnect(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
         drv_accelDisable(handle->accelHandle);
 }
 
-static void onWrite(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
-{
-    // No write for noew
-}
-
 static uint32_t addXChar(ble_accSrvHandle_t handle) {
     uint32_t errCode;
     ble_uuid_t accCharUuid;
@@ -69,7 +65,7 @@ static uint32_t addXChar(ble_accSrvHandle_t handle) {
 
     memset(&gattChar, 0, sizeof(gattChar));
     gattChar.char_props.read = 1;
-    gattChar.char_props.notify = 0;
+    gattChar.char_props.notify = 1;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_pf = NULL;
@@ -91,7 +87,7 @@ static uint32_t addXChar(ble_accSrvHandle_t handle) {
     gattAttrVal.p_uuid = &accCharUuid;
     gattAttrVal.p_attr_md = &gattAttr;
     gattAttrVal.init_len = sizeof(uint8_t);
-    gattAttrVal.max_len = sizeof(uint8_t);
+    gattAttrVal.max_len = GATT_MTU_SIZE_DEFAULT - 3;
     gattAttrVal.init_offs = 0;
     gattAttrVal.p_value = NULL;
 
@@ -99,7 +95,6 @@ static uint32_t addXChar(ble_accSrvHandle_t handle) {
             &gattChar,
             &gattAttrVal,
             &handle->charXHandle);
-    APP_ERROR_CHECK(errCode);
     return errCode;
 }
 
@@ -120,7 +115,7 @@ static uint32_t addYChar(ble_accSrvHandle_t handle)
 
     memset(&gattChar, 0, sizeof(gattChar));
     gattChar.char_props.read = 1;
-    gattChar.char_props.notify = 0;
+    gattChar.char_props.notify = 1;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_user_desc = NULL;
     gattChar.p_char_pf = NULL;
@@ -142,7 +137,7 @@ static uint32_t addYChar(ble_accSrvHandle_t handle)
     gattAttrVal.p_uuid = &accCharUuid;
     gattAttrVal.p_attr_md = &gattAttr;
     gattAttrVal.init_len = sizeof(uint8_t);
-    gattAttrVal.max_len = sizeof(uint8_t);
+    gattAttrVal.max_len = GATT_MTU_SIZE_DEFAULT - 3;
     gattAttrVal.init_offs = 0;
     gattAttrVal.p_value = NULL;
 
@@ -150,7 +145,56 @@ static uint32_t addYChar(ble_accSrvHandle_t handle)
             &gattChar,
             &gattAttrVal,
             &handle->charYHandle);
-    APP_ERROR_CHECK(errCode);
+    return errCode;
+}
+
+static uint32_t addZChar(ble_accSrvHandle_t handle)
+{
+    uint32_t errCode;
+    ble_uuid_t accCharUuid;
+
+    ble_gatts_char_md_t gattChar;
+    ble_gatts_attr_md_t gattAttr;
+    ble_gatts_attr_t gattAttrVal;
+    ble_gatts_attr_md_t cccdAttr;
+
+    memset(&cccdAttr, 0, sizeof(cccdAttr));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccdAttr.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&cccdAttr.write_perm);
+    cccdAttr.vloc = BLE_GATTS_VLOC_STACK;
+
+    memset(&gattChar, 0, sizeof(gattChar));
+    gattChar.char_props.read = 1;
+    gattChar.char_props.notify = 1;
+    gattChar.p_char_user_desc = NULL;
+    gattChar.p_char_user_desc = NULL;
+    gattChar.p_char_pf = NULL;
+    gattChar.p_cccd_md = &cccdAttr;
+    gattChar.p_sccd_md = NULL;
+
+    memset(&gattAttr, 0, sizeof(gattAttr));
+    BLE_GAP_CONN_SEC_MODE_SET_OPEN(&gattAttr.read_perm);
+    BLE_GAP_CONN_SEC_MODE_SET_NO_ACCESS(&gattAttr.write_perm);
+    gattAttr.vloc = BLE_GATTS_VLOC_STACK;
+    gattAttr.rd_auth = 0;
+    gattAttr.wr_auth = 0;
+    gattAttr.vlen = 0;
+
+    accCharUuid.type = handle->uuidType;
+    accCharUuid.uuid = ACC_UUID_Z_CHAR;
+
+    memset(&gattAttrVal, 0, sizeof(gattAttrVal));
+    gattAttrVal.p_uuid = &accCharUuid;
+    gattAttrVal.p_attr_md = &gattAttr;
+    gattAttrVal.init_len = sizeof(uint8_t);
+    gattAttrVal.max_len = GATT_MTU_SIZE_DEFAULT - 3;
+    gattAttrVal.init_offs = 0;
+    gattAttrVal.p_value = NULL;
+
+    errCode = sd_ble_gatts_characteristic_add(handle->serviceHandle,
+            &gattChar,
+            &gattAttrVal,
+            &handle->charZHandle);
     return errCode;
 }
 
@@ -181,6 +225,7 @@ ble_accSrvHandle_t ble_accSrvInit(ble_accSrvConfig_t *conf)
     // Add characteristic
     addYChar(handle);
     addXChar(handle);
+    addZChar(handle);
 
     return handle;
 }
@@ -194,40 +239,45 @@ void ble_accSrvBleHandleEvent(ble_accSrvHandle_t handle, ble_evt_t *bleEvent)
         case BLE_GAP_EVT_DISCONNECTED:
             onDisconnect(handle, bleEvent);
             break;
-        case BLE_GATTS_EVT_WRITE:
-            onWrite(handle, bleEvent);
-            break;
+        default:
+        	break;
     }
 }
 
 uint32_t ble_accSrvUpdate(ble_accSrvHandle_t handle, drv_accelData_t *accData)
 {
     uint32_t errCode;
-    ble_gatts_value_t gattXVal = {
-        .len = 1,
-        .offset = 0,
-        .p_value = (uint8_t*)&accData->x
+    uint16_t len = 1;
+    ble_gatts_hvx_params_t hvxParams[3] = {
+		{
+			.handle = handle->charXHandle.value_handle,
+			.p_data = (uint8_t*)&accData->x,
+			.p_len = &len,
+			.type = BLE_GATT_HVX_NOTIFICATION
+		},
+		{
+			.handle = handle->charYHandle.value_handle,
+			.p_data = (uint8_t*)&accData->y,
+			.p_len = &len,
+			.type = BLE_GATT_HVX_NOTIFICATION
+		},
+		{
+			.handle = handle->charZHandle.value_handle,
+			.p_data = (uint8_t*)&accData->z,
+			.p_len = &len,
+			.type = BLE_GATT_HVX_NOTIFICATION
+		}
     };
 
-    ble_gatts_value_t gattYVal = {
-        .len = 1,
-        .offset = 0,
-        .p_value = (uint8_t*)&accData->y
-    };
-
-    errCode = sd_ble_gatts_value_set(handle->connHandle,
-            handle->charXHandle.value_handle,
-            &gattXVal);
-
+    errCode = sd_ble_gatts_hvx(handle->connHandle, &hvxParams[0]);
     if(errCode != NRF_SUCCESS)
-        return errCode;
-
-    errCode = sd_ble_gatts_value_set(handle->connHandle,
-        handle->charYHandle.value_handle,
-        &gattYVal);
-
+    	return errCode;
+    errCode = sd_ble_gatts_hvx(handle->connHandle, &hvxParams[1]);
     if(errCode != NRF_SUCCESS)
-        return errCode;
+        	return errCode;
+    errCode = sd_ble_gatts_hvx(handle->connHandle, &hvxParams[2]);
+    if(errCode != NRF_SUCCESS)
+        	return errCode;
 
     return NRF_SUCCESS;
 }

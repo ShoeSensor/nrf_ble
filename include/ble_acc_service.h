@@ -43,6 +43,7 @@ extern "C" {
 #define ACC_UUID_SERVICE    0x6726
 #define ACC_UUID_X_CHAR     0x6727
 #define ACC_UUID_Y_CHAR     0x6728
+#define ACC_UUID_Z_CHAR     0x6729
 
 typedef struct accSrvHandle *ble_accSrvHandle_t;
 
