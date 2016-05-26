@@ -38,16 +38,16 @@ remduplicates = $(strip $(if $1,$(firstword $1) $(call remduplicates,$(filter-ou
 
 
 #Project specific files
-INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/config)
-INC_PATHS  	+= -I$(abspath $(PROJ_HOME)/include)
-INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_mma8453q/include)
+INC_PATHS	+= -I$(abspath $(PROJ_HOME)/config)
+INC_PATHS	+= -I$(abspath $(PROJ_HOME)/include)
 INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_freertos/include)
+INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_mma8453q/include)
 INC_PATHS	+= -I$(abspath $(SDK_ROOT)/apps/nrf_uart/include)
-C_SOURCE_FILES += $(abspath $(PROJ_HOME)/$(shell find ./ -type f -name '*.c'))
-C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_mma8453q/src/nrf_mma8453q.c)
-C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_freertos/src/$(shell find ../nrf_freertos/src -type f -name '*.c'))
-C_SOURCE_FILES += $(abspath $(SDK_ROOT)/apps/nrf_uart/src/nrf_uartDriver.c)
-
+C_SOURCE_FILES += $(abspath $(PROJ_HOME)/main.c)
+C_SOURCE_FILES += $(abspath $(wildcard $(PROJ_HOME)/src/*.c))
+C_SOURCE_FILES += $(abspath $(wildcard $(SDK_ROOT)/apps/nrf_freertos/src/*.c))
+C_SOURCE_FILES += $(abspath $(wildcard $(SDK_ROOT)/apps/nrf_mma8453q/src/*.c))
+C_SOURCE_FILES += $(abspath $(wildcard $(SDK_ROOT)/apps/nrf_uart/src/*.c))
 
 #source common to all targets
 C_SOURCE_FILES += \
@@ -213,18 +213,18 @@ ASMFLAGS += -DNRF52_PAN_62
 ASMFLAGS += -DNRF52_PAN_63
 
 #default target - first one defined
-default: clean nrf52422_xxac_s132
+default: clean nrf52832_xxaa_s132
 
 #building all targets
 
 all: clean
 	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e cleanobj
-	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e nrf52422_xxac_s132
+	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e nrf52832_xxaa_s132
 
 #target for printing all targets
 help:
 	@echo following targets are available:
-	@echo 	nrf52422_xxac_s132
+	@echo 	nrf52832_xxaa_s132
 	@echo 	flash_softdevice
 
 
@@ -241,9 +241,9 @@ vpath %.s $(ASM_PATHS)
 
 OBJECTS = $(C_OBJECTS) $(ASM_OBJECTS)
 
-nrf52422_xxac_s132: OUTPUT_FILENAME := nrf52422_xxac_s132
-nrf52422_xxac_s132: LINKER_SCRIPT=config/gcc_nrf52.ld
-nrf52422_xxac_s132: $(BUILD_DIRECTORIES) $(OBJECTS)
+nrf52832_xxaa_s132: OUTPUT_FILENAME := nrf52832_xxaa_s132
+nrf52832_xxaa_s132: LINKER_SCRIPT=config/gcc_nrf52.ld
+nrf52832_xxaa_s132: $(BUILD_DIRECTORIES) $(OBJECTS)
 	@echo Linking target: $(OUTPUT_FILENAME).out
 	$(NO_ECHO)$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $(OUTPUT_BINARY_DIRECTORY)/$(OUTPUT_FILENAME).out
 	$(NO_ECHO)$(MAKE) -f $(MAKEFILE_NAME) -C $(MAKEFILE_DIR) -e finalize
@@ -303,8 +303,8 @@ cleanobj:
 	$(RM) $(BUILD_DIRECTORIES)/*.o
 
 flash: $(MAKECMDGOALS)
-	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/nrf52422_xxac_s132.hex
-	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/nrf52422_xxac_s132.hex -f nrf52  --sectorerase
+	@echo Flashing: $(OUTPUT_BINARY_DIRECTORY)/nrf52832_xxaa_s132.hex
+	nrfjprog --program $(OUTPUT_BINARY_DIRECTORY)/nrf52832_xxaa_s132.hex -f nrf52  --sectorerase
 	nrfjprog --reset -f nrf52
 
 ## Flash softdevice
