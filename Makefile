@@ -51,18 +51,14 @@ C_SOURCE_FILES += $(abspath $(wildcard $(SDK_ROOT)/apps/nrf_uart/src/*.c))
 
 #source common to all targets
 C_SOURCE_FILES += \
-$(abspath $(SDK_ROOT)/components/libraries/button/app_button.c) \
 $(abspath $(SDK_ROOT)/components/libraries/util/app_error.c) \
 $(abspath $(SDK_ROOT)/components/libraries/timer/app_timer_freertos.c) \
 $(abspath $(SDK_ROOT)/components/libraries/trace/app_trace.c) \
 $(abspath $(SDK_ROOT)/components/libraries/util/nrf_assert.c) \
 $(abspath $(SDK_ROOT)/components/libraries/uart/retarget.c) \
 $(abspath $(SDK_ROOT)/components/libraries/uart/app_uart.c) \
-$(abspath $(SDK_ROOT)/components/drivers_nrf/delay/nrf_delay.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/common/nrf_drv_common.c) \
 $(abspath $(SDK_ROOT)/components/ble/ble_services/ble_dis/ble_dis.c) \
-$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_bas/ble_bas.c) \
-$(abspath $(SDK_ROOT)/components/ble/ble_services/ble_hrs/ble_hrs.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/gpiote/nrf_drv_gpiote.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/twi_master/nrf_drv_twi.c) \
 $(abspath $(SDK_ROOT)/components/drivers_nrf/uart/nrf_drv_uart.c) \
